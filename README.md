@@ -1,5 +1,66 @@
+# Лабораторная работа №1 - Настройка Nginx по заданному ТЗ
 
-# Настройка Nginx по заданному ТЗ
+## 1. Установка nginx
+Установка Nginx на Ubuntu — это простой процесс. Следуйте этим шагам, чтобы установить Nginx на вашу систему:
+
+### Шаг 1: Обновите список пакетов
+Прежде чем установить новое программное обеспечение, рекомендуется обновить список пакетов. Откройте терминал и выполните следующую команду:
+
+bash
+sudo apt update
+
+
+### Шаг 2: Установите Nginx
+После обновления списка пакетов установите Nginx, выполнив следующую команду:
+
+bash
+sudo apt install nginx
+
+
+### Шаг 3: Запустите Nginx
+После завершения установки можно запустить Nginx. Выполните следующую команду:
+
+bash
+sudo systemctl start nginx
+
+
+### Шаг 4: Проверьте статус Nginx
+Чтобы убедиться, что Nginx запущен и работает, проверьте его статус:
+
+bash
+sudo systemctl status nginx
+
+
+Вы должны увидеть сообщение о том, что Nginx активен и работает (active (running)).
+
+### Шаг 5: Настройка Nginx для автоматического запуска при загрузке
+Чтобы Nginx автоматически запускался при загрузке системы, выполните следующую команду:
+
+bash
+sudo systemctl enable nginx
+
+
+### Шаг 6: Настройте брандмауэр (опционально)
+Если у вас установлен брандмауэр UFW (Uncomplicated Firewall), необходимо разрешить HTTP и HTTPS трафик:
+
+bash
+sudo ufw allow 'Nginx Full'
+
+
+### Шаг 7: Проверьте установку
+Теперь откройте веб-браузер и введите `http://your_server_ip` или `http://localhost`. Вы должны увидеть страницу приветствия Nginx, которая подтверждает, что установка прошла успешно.
+
+### Шаг 8: Настройка Nginx (опционально)
+Основной файл конфигурации Nginx находится по адресу `/etc/nginx/nginx.conf`, а файлы для виртуальных хостов (если используются) находятся в каталогах `/etc/nginx/sites-available/` и `/etc/nginx/sites-enabled/`. Вы можете редактировать эти файлы для настройки Nginx под ваши нужды.
+
+### Шаг 9: Перезапустите Nginx после изменений (если нужно)
+После внесения изменений в конфигурацию не забудьте перезапустить Nginx для применения изменений:
+
+bash
+sudo systemctl restart nginx
+
+
+Теперь вы успешно установили и настроили Nginx на Ubuntu!
 
 ## 1. Настройка HTTPS с сертификатом
 
@@ -9,8 +70,8 @@
 
 nginx
 server {
-    listen 443 ssl;
-    server_name yourdomain.com;  # Замените на ваш домен
+listen 443 ssl;
+server_name yourdomain.com; # Замените на ваш домен
 
     ssl_certificate /path/to/your/certificate.crt;  # Путь к SSL-сертификату
     ssl_certificate_key /path/to/your/private.key;   # Путь к приватному ключу
@@ -19,8 +80,8 @@ server {
         root /var/www/yourdomain;  # Путь к корневой директории вашего сайта
         index index.html index.htm;
     }
-}
 
+}
 
 ## 2. Принудительное перенаправление HTTP на HTTPS
 
@@ -28,13 +89,13 @@ server {
 
 nginx
 server {
-    listen 80;
-    server_name yourdomain.com;  # Замените на ваш домен
+listen 80;
+server_name yourdomain.com; # Замените на ваш домен
 
     # Принудительное перенаправление на HTTPS
     return 301 https://$host$request_uri;
-}
 
+}
 
 ## 3. Использование alias для создания псевдонимов путей
 
@@ -42,9 +103,8 @@ server {
 
 nginx
 location /files/ {
-    alias /var/www/yourdomain/files/;  # Путь к реальному каталогу на сервере
+alias /var/www/yourdomain/files/; # Путь к реальному каталогу на сервере
 }
-
 
 ## 4. Настройка виртуальных хостов для обслуживания нескольких доменных имен
 
@@ -52,8 +112,8 @@ location /files/ {
 
 nginx
 server {
-    listen 443 ssl;
-    server_name domain1.com www.domain1.com;
+listen 443 ssl;
+server_name domain1.com www.domain1.com;
 
     ssl_certificate /path/to/domain1/certificate.crt;
     ssl_certificate_key /path/to/domain1/private.key;
@@ -62,11 +122,12 @@ server {
         root /var/www/domain1;
         index index.html index.htm;
     }
+
 }
 
 server {
-    listen 443 ssl;
-    server_name domain2.com www.domain2.com;
+listen 443 ssl;
+server_name domain2.com www.domain2.com;
 
     ssl_certificate /path/to/domain2/certificate.crt;
     ssl_certificate_key /path/to/domain2/private.key;
@@ -75,25 +136,28 @@ server {
         root /var/www/domain2;
         index index.html index.htm;
     }
-}
 
+}
 
 ## Полная конфигурация Nginx
 
 Объединив все вышеописанные настройки, ваш файл конфигурации может выглядеть следующим образом:
 
 nginx
+
 # Перенаправление HTTP на HTTPS
+
 server {
-    listen 80;
-    server_name yourdomain.com;  # Замените на ваш домен
-    return 301 https://$host$request_uri;
+listen 80;
+server_name yourdomain.com; # Замените на ваш домен
+return 301 https://$host$request_uri;
 }
 
 # Конфигурация для первого домена
+
 server {
-    listen 443 ssl;
-    server_name yourdomain.com;
+listen 443 ssl;
+server_name yourdomain.com;
 
     ssl_certificate /path/to/your/certificate.crt;
     ssl_certificate_key /path/to/your/private.key;
@@ -106,12 +170,14 @@ server {
     location /files/ {
         alias /var/www/yourdomain/files/;
     }
+
 }
 
 # Конфигурация для второго домена
+
 server {
-    listen 443 ssl;
-    server_name anotherdomain.com;
+listen 443 ssl;
+server_name anotherdomain.com;
 
     ssl_certificate /path/to/anotherdomain/certificate.crt;
     ssl_certificate_key /path/to/anotherdomain/private.key;
@@ -120,17 +186,15 @@ server {
         root /var/www/anotherdomain;
         index index.html index.htm;
     }
-}
 
+}
 
 Не забудьте перезагрузить Nginx после внесения изменений:
 
 bash
-sudo nginx -t  # Проверка синтаксиса конфигурации
-sudo systemctl restart nginx  # Перезагрузка Nginx
-
+sudo nginx -t # Проверка синтаксиса конфигурации
+sudo systemctl restart nginx # Перезагрузка Nginx
 
 Теперь Nginx настроен для работы по HTTPS, перенаправляет HTTP-запросы на HTTPS, использует alias для псевдонимов и обслуживает несколько доменных имен на одном сервере.
-
 
 В этом документе описаны основные шаги настройки Nginx в соответствии с указанным техническим заданием, с примерами конфигурации, которые можно использовать.
