@@ -1,0 +1,48 @@
+
+server {
+	listen 80 default_server;
+	return 301 https://$host$request_uri;
+
+}
+
+server {
+    listen 443 ssl;
+    server_name loc.project1.com;
+
+    # Указываем на файлы сертификата SSL и ключа, которые будут использоваться для шифрования данных между 
+    # клиентом и сервером.
+
+    ssl_certificate /usr/share/nginx/keys/sert.crt;
+    ssl_certificate_key /usr/share/nginx/keys/key.key;
+     
+    location / {    
+        # Указываем корневые каталоги сервисов, где находятся файлы, которые должны быть обработаны сервером.
+        root /var/www/project1.com; 
+        index index.html;
+        try_files $uri $uri/ =404;
+    }
+
+    location /mems/ {
+      
+       alias /var/www/project1.com/mems/;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name loc.project2.com;
+
+    # Указываем на файлы сертификата SSL и ключа, которые будут использоваться для шифрования данных между 
+    # клиентом и сервером.
+
+    ssl_certificate /usr/share/nginx/keys/sert.crt;
+    ssl_certificate_key /usr/share/nginx/keys/key.key;
+     
+    location / {    
+        # Указываем корневые каталоги сервисов, где находятся файлы, которые должны быть обработаны сервером.
+        root /var/www/project2.com; 
+        index index.html;
+        try_files $uri $uri/ =404;
+    }
+
+}
