@@ -89,16 +89,18 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /usr/share/nginx/key
 ```nginx
 nginx
 server {
-listen 443 ssl;
-server_name yourdomain.com; # Замените на ваш домен
+    listen 443 ssl;
+    server_name loc.project1.com;
 
-    ssl_certificate /path/to/your/certificate.crt;  # Путь к SSL-сертификату
-    ssl_certificate_key /path/to/your/private.key;   # Путь к приватному ключу
+    ssl_certificate /usr/share/nginx/keys/sert.crt;
+    ssl_certificate_key /usr/share/nginx/keys/key.key;
 
     location / {
-        root /var/www/yourdomain;  # Путь к корневой директории вашего сайта
-        index index.html index.htm;
+        root /var/www/project1.com;
+        index index.html;
+        try_files $uri $uri/ =404;
     }
+
 
 }
 ```
@@ -109,8 +111,8 @@ server_name yourdomain.com; # Замените на ваш домен
 
 ```nginx
 nginx
-location /files/ {
-alias /var/www/yourdomain/files/; # Путь к реальному каталогу на сервере
+location /mems/ {
+    alias /var/www/project1.com/mems/; # Путь к реальному каталогу на сервере
 }
 ```
 
@@ -121,29 +123,35 @@ alias /var/www/yourdomain/files/; # Путь к реальному катало�
 ```nginx
 nginx
 server {
-listen 443 ssl;
-server_name domain1.com www.domain1.com;
+    listen 443 ssl;
+    server_name loc.project1.com;
 
-    ssl_certificate /path/to/domain1/certificate.crt;
-    ssl_certificate_key /path/to/domain1/private.key;
+    ssl_certificate /usr/share/nginx/keys/sert.crt;
+    ssl_certificate_key /usr/share/nginx/keys/key.key;
 
     location / {
-        root /var/www/domain1;
-        index index.html index.htm;
+        root /var/www/project1.com;
+        index index.html;
+        try_files $uri $uri/ =404;
+    }
+
+    location /mems/ {
+        alias /var/www/project1.com/mems/;
     }
 
 }
 
 server {
-listen 443 ssl;
-server_name domain2.com www.domain2.com;
+    listen 443 ssl;
+    server_name loc.project2.com;
 
-    ssl_certificate /path/to/domain2/certificate.crt;
-    ssl_certificate_key /path/to/domain2/private.key;
+    ssl_certificate /usr/share/nginx/keys/sert.crt;
+    ssl_certificate_key /usr/share/nginx/keys/key.key;
 
     location / {
-        root /var/www/domain2;
-        index index.html index.htm;
+        root /var/www/project2.com;
+        index index.html;
+        try_files $uri $uri/ =404;
     }
 
 }
@@ -157,55 +165,77 @@ server_name domain2.com www.domain2.com;
 # Перенаправление HTTP на HTTPS
 
 server {
-listen 80;
-return 301 https://$host$request_uri;
+    listen 80 default_server;
+    return 301 https://$host$request_uri;
 }
 
 # Конфигурация для первого домена
 
 server {
-listen 443 ssl;
-server_name yourdomain.com;
+    listen 443 ssl;
+    server_name loc.project1.com;
 
-    ssl_certificate /path/to/your/certificate.crt;
-    ssl_certificate_key /path/to/your/private.key;
+    ssl_certificate /usr/share/nginx/keys/sert.crt;
+    ssl_certificate_key /usr/share/nginx/keys/key.key;
 
     location / {
-        root /var/www/yourdomain;
-        index index.html index.htm;
+        root /var/www/project1.com;
+        index index.html;
+        try_files $uri $uri/ =404;
     }
 
-    location /files/ {
-        alias /var/www/yourdomain/files/;
+    location /mems/ {
+        alias /var/www/project1.com/mems/;
     }
 
+    # Статус сервера
+    location /nginx_status {
+        stub_status on;
+        allow 127.0.0.1;
+        deny all;
+    }
 }
 
 # Конфигурация для второго домена
 
 server {
-listen 443 ssl;
-server_name anotherdomain.com;
+    listen 443 ssl;
+    server_name loc.project2.com;
 
-    ssl_certificate /path/to/anotherdomain/certificate.crt;
-    ssl_certificate_key /path/to/anotherdomain/private.key;
+    ssl_certificate /usr/share/nginx/keys/sert.crt;
+    ssl_certificate_key /usr/share/nginx/keys/key.key;
 
     location / {
-        root /var/www/anotherdomain;
-        index index.html index.htm;
+        root /var/www/project2.com;
+        index index.html;
+        try_files $uri $uri/ =404;
     }
 
+    # Статус сервера
+    location /nginx_status {
+        stub_status on;
+        allow 127.0.0.1;
+        deny all;
+    }
 }
 ```
 
 Не забудьте перезагрузить Nginx после внесения изменений:
 
-````nginx bash
-sudo nginx -t ``` - Проверка синтаксиса конфигурации
-```nginx sudo systemctl restart nginx ``` - Перезагрузка Nginx
+```nginx
+ sudo nginx -t # Проверка синтаксиса конфигурации.
+```
+
+---
+
+```nginx
+ sudo systemctl restart nginx # Перезагрузка Nginx.
+```
 
 Теперь Nginx настроен для работы по HTTPS, перенаправляет HTTP-запросы на HTTPS, использует alias для псевдонимов и обслуживает несколько доменных имен на одном сервере.
 
 В этом документе описаны основные шаги настройки Nginx в соответствии с указанным техническим заданием, с примерами конфигурации, которые можно использовать.
 
-````
+```
+
+```
