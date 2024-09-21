@@ -42,7 +42,7 @@ sudo systemctl status nginx
 
 Теперь откройте веб-браузер и введите `http://your_server_ip` или `http://localhost`. Вы должны увидеть страницу приветствия Nginx, которая подтверждает, что установка прошла успешно.
 
-![Welcome to nginx](img/1.jpg)
+![Welcome to nginx](./img/1.jpg)
 
 ### Шаг 6: Настройка Nginx (опционально)
 
