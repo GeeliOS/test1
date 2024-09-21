@@ -8,7 +8,7 @@
 
 Прежде чем установить новое программное обеспечение, рекомендуется обновить список пакетов. Откройте терминал и выполните следующую команду:
 
-```bash
+```nginx
 sudo apt update
 ```
 
@@ -16,7 +16,7 @@ sudo apt update
 
 После обновления списка пакетов установите Nginx, выполнив следующую команду:
 
-```bash
+```nginx
 sudo apt install nginx
 ```
 
@@ -24,7 +24,7 @@ sudo apt install nginx
 
 После завершения установки можно запустить Nginx. Выполните следующую команду:
 
-```bash
+```nginx
 sudo systemctl start nginx
 ```
 
@@ -32,7 +32,7 @@ sudo systemctl start nginx
 
 Чтобы убедиться, что Nginx запущен и работает, проверьте его статус:
 
-```bash
+```nginx
 sudo systemctl status nginx
 ```
 
@@ -50,7 +50,7 @@ sudo systemctl status nginx
 
 После внесения изменений в конфигурацию не забудьте перезапустить Nginx для применения изменений:
 
-```bash
+```nginx
 sudo systemctl restart nginx
 ```
 
