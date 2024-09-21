@@ -48,7 +48,7 @@ sudo systemctl status nginx
 
 Основной файл конфигурации Nginx находится по адресу `/etc/nginx/nginx.conf`, а файлы для виртуальных хостов (если используются) находятся в каталогах `/etc/nginx/sites-available/` и `/etc/nginx/sites-enabled/`. Вы можете редактировать эти файлы для настройки Nginx под ваши нужды.
 
-### Шаг 7: Перезапустите Nginx после изменений (если нужно)
+#### Шаг 7: Перезапустите Nginx после изменений (если нужно)
 
 После внесения изменений в конфигурацию не забудьте перезапустить Nginx для применения изменений:
 
@@ -66,10 +66,8 @@ sudo systemctl restart nginx
 nginx
 server {
 listen 80;
-server_name yourdomain.com; # Замените на ваш домен
+return 301 https://$host$request_uri; # Принудительное перенаправление на HTTPS
 
-    # Принудительное перенаправление на HTTPS
-    return 301 https://$host$request_uri;
 
 }
 ```
@@ -152,7 +150,6 @@ server_name domain2.com www.domain2.com;
 
 server {
 listen 80;
-server_name yourdomain.com; # Замените на ваш домен
 return 301 https://$host$request_uri;
 }
 
