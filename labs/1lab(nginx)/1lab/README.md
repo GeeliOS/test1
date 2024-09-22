@@ -157,6 +157,18 @@ server {
 }
 ```
 
+## 6. Настройка мониторинга сервера
+
+Чтобы настроить мониторинг в данном коде Nginx, вам нужно добавить блок `location` для статуса сервера. Это будет точка, по которой вы можете просматривать статистику о работе Nginx. Для этого используется директива `stub_status`. В вашей текущей конфигурации должен появиться данный кусок:
+
+```nginx
+    location /nginx_status {
+        stub_status on;
+        allow 127.0.0.1;
+        deny all;
+    }
+```
+
 ## Полная конфигурация Nginx
 
 Объединив все вышеописанные настройки, ваш файл конфигурации может выглядеть следующим образом:
@@ -165,57 +177,57 @@ server {
 # Перенаправление HTTP на HTTPS
 
 server {
-    listen 80 default_server;
-    return 301 https://$host$request_uri;
+    listen 80 default_server; # Слушает на 80 порту (HTTP) и устанавливает этот сервер как сервер по умолчанию.
+    return 301 https://$host$request_uri;  # Перенаправляет все запросы на HTTPS (301 - постоянное перенаправление).
 }
 
 # Конфигурация для первого домена
 
 server {
-    listen 443 ssl;
-    server_name loc.project1.com;
+    listen 443 ssl; # Слушает на 443 порту (HTTPS) с использованием SSL.
+    server_name loc.project1.com; # Указывает доменное имя, к которому относится этот сервер.
 
-    ssl_certificate /usr/share/nginx/keys/sert.crt;
-    ssl_certificate_key /usr/share/nginx/keys/key.key;
+    ssl_certificate /usr/share/nginx/keys/sert.crt; # Путь к SSL-сертификату.
+    ssl_certificate_key /usr/share/nginx/keys/key.key; # Путь к приватному ключу SSL-сертификата.
 
-    location / {
-        root /var/www/project1.com;
-        index index.html;
-        try_files $uri $uri/ =404;
+    location / { # Определяет настройку для корневого URL.
+        root /var/www/project1.com; # Указывает корневую директорию для файлов сайта.
+        index index.html; # Указывает файл, который будет загружаться по умолчанию.
+        try_files $uri $uri/ =404; # Проверяет наличие запрашиваемого файла и возвращает 404, если файл не найден.
     }
 
-    location /mems/ {
-        alias /var/www/project1.com/mems/;
+    location /mems/ { # Определяет настройку для URL, начинающегося с /mems/.
+        alias /var/www/project1.com/mems/; # Указывает, что данный URL соответствует этой директории.
     }
 
     # Статус сервера
-    location /nginx_status {
-        stub_status on;
-        allow 127.0.0.1;
-        deny all;
+    location /nginx_status { # Определяет настройку для получения статуса сервера.
+        stub_status on; # Включает отображение статистики работы Nginx.
+        allow 127.0.0.1; # Разрешает доступ к статусу только с локального хоста.
+        deny all; # Запрещает доступ ко всем остальным IP-адресам.
     }
 }
 
 # Конфигурация для второго домена
 
 server {
-    listen 443 ssl;
-    server_name loc.project2.com;
+    listen 443 ssl; # Слушает на 443 порту (HTTPS) с использованием SSL.
+    server_name loc.project2.com; # Указывает доменное имя, к которому относится этот сервер.
 
-    ssl_certificate /usr/share/nginx/keys/sert.crt;
-    ssl_certificate_key /usr/share/nginx/keys/key.key;
+    ssl_certificate /usr/share/nginx/keys/sert.crt; # Путь к SSL-сертификату.
+    ssl_certificate_key /usr/share/nginx/keys/key.key; # Путь к приватному ключу SSL-сертификата.
 
-    location / {
-        root /var/www/project2.com;
-        index index.html;
-        try_files $uri $uri/ =404;
+    location / { # Определяет настройку для корневого URL.
+        root /var/www/project2.com; # Указывает корневую директорию для файлов сайта.
+        index index.html; # Указывает файл, который будет загружаться по умолчанию.
+        try_files $uri $uri/ =404; # Проверяет наличие запрашиваемого файла и возвращает 404, если файл не найден.
     }
 
     # Статус сервера
-    location /nginx_status {
-        stub_status on;
-        allow 127.0.0.1;
-        deny all;
+    location /nginx_status { # Определяет настройку для получения статуса сервера.
+        stub_status on; # Включает отображение статистики работы Nginx.
+        allow 127.0.0.1; # Разрешает доступ к статусу только с локального хоста.
+        deny all; # Запрещает доступ ко всем остальным IP-адресам.
     }
 }
 ```
