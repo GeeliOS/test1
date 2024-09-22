@@ -4,7 +4,7 @@
 
 Установка Nginx — это простой процесс. Следуйте этим шагам, чтобы установить Nginx на вашу систему (В реалях данного проекта я буду пользоваться ОС от ubuntu):
 
-#### Шаг 1: Обновите список пакетов
+#### Шаг 1) Обновите список пакетов
 
 Прежде чем установить новое программное обеспечение, рекомендуется обновить список пакетов. Откройте терминал и выполните следующую команду:
 
@@ -12,7 +12,7 @@
 sudo apt update
 ```
 
-#### Шаг 2: Установите Nginx
+#### Шаг 2) Установите Nginx
 
 После обновления списка пакетов установите Nginx, выполнив следующую команду:
 
@@ -20,7 +20,7 @@ sudo apt update
 sudo apt install nginx
 ```
 
-#### Шаг 3: Запустите Nginx
+#### Шаг 3) Запустите Nginx
 
 После завершения установки можно запустить Nginx. Выполните следующую команду:
 
@@ -28,7 +28,7 @@ sudo apt install nginx
 sudo systemctl start nginx
 ```
 
-#### Шаг 4: Проверьте статус Nginx
+#### Шаг 4) Проверьте статус Nginx
 
 Чтобы убедиться, что Nginx запущен и работает, проверьте его статус:
 
@@ -40,17 +40,17 @@ sudo systemctl status nginx
 
 ![Welcome to nginx](img/1.jpg)
 
-#### Шаг 5: Проверьте установку
+#### Шаг 5) Проверьте установку
 
 Теперь откройте веб-браузер и введите `http://your_server_ip` или `http://localhost`. Вы должны увидеть страницу приветствия Nginx, которая подтверждает, что установка прошла успешно.
 
 ![Welcome to nginx](img/2.jpg)
 
-#### Шаг 6: Настройка Nginx (опционально)
+#### Шаг 6) Настройка Nginx (опционально)
 
 Основной файл конфигурации Nginx находится по адресу `/etc/nginx/nginx.conf`, а файлы для виртуальных хостов (если используются) находятся в каталогах `/etc/nginx/sites-available/` и `/etc/nginx/sites-enabled/`. Вы можете редактировать эти файлы для настройки Nginx под ваши нужды.
 
-#### Шаг 7: Перезапустите Nginx после изменений (если нужно)
+#### Шаг 7) Перезапустите Nginx после изменений (если нужно)
 
 После внесения изменений в конфигурацию не забудьте перезапустить Nginx для применения изменений:
 
@@ -65,12 +65,9 @@ sudo systemctl restart nginx
 Для обеспечения безопасного соединения нужно настраивать перенаправление HTTP (порт 80) на HTTPS (порт 443). Это делается в отдельном блоке `server`:
 
 ```nginx
-nginx
 server {
-listen 80;
-return 301 https://$host$request_uri; # Принудительное перенаправление на HTTPS
-
-
+    listen 80 default_server; # Слушает на 80 порту (HTTP) и устанавливает этот сервер как сервер по умолчанию.
+    return 301 https://$host$request_uri;  # Перенаправляет все запросы на HTTPS (301 - постоянное перенаправление).
 }
 ```
 
@@ -87,21 +84,18 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /usr/share/nginx/key
 Пример конфигурации для HTTPS:
 
 ```nginx
-nginx
 server {
-    listen 443 ssl;
-    server_name loc.project1.com;
+    listen 443 ssl; # Слушает на 443 порту (HTTPS) с использованием SSL.
+    server_name loc.project1.com; # Указывает доменное имя, к которому относится этот сервер.
 
-    ssl_certificate /usr/share/nginx/keys/sert.crt;
-    ssl_certificate_key /usr/share/nginx/keys/key.key;
+    ssl_certificate /usr/share/nginx/keys/sert.crt; # Путь к SSL-сертификату.
+    ssl_certificate_key /usr/share/nginx/keys/key.key; # Путь к приватному ключу SSL-сертификата.
 
-    location / {
-        root /var/www/project1.com;
-        index index.html;
-        try_files $uri $uri/ =404;
+    location / { # Определяет настройку для корневого URL.
+        root /var/www/project1.com; # Указывает корневую директорию для файлов сайта.
+        index index.html; # Указывает файл, который будет загружаться по умолчанию.
+        try_files $uri $uri/ =404; # Проверяет наличие запрашиваемого файла и возвращает 404, если файл не найден.
     }
-
-
 }
 ```
 
@@ -110,9 +104,8 @@ server {
 Вы можете использовать директиву `alias` для создания псевдонимов к файлам или каталогам на сервере. Например, если у вас есть каталог `files` и вы хотите получить доступ к его содержимому по URL `yourdomain.com/files/`, то ваша конфигурация может выглядеть следующим образом:
 
 ```nginx
-nginx
-location /mems/ {
-    alias /var/www/project1.com/mems/; # Путь к реальному каталогу на сервере
+location /mems/ { # Определяет настройку для URL, начинающегося с /mems/.
+   alias /var/www/project1.com/mems/; # Указывает, что данный URL соответствует этой директории.
 }
 ```
 
@@ -121,39 +114,41 @@ location /mems/ {
 Чтобы настроить несколько доменных имен на одном сервере, создайте отдельные блоки `server` для каждого домена. Пример конфигурации для двух доменов:
 
 ```nginx
-nginx
+
+# Конфигурация для первого домена
+
 server {
-    listen 443 ssl;
-    server_name loc.project1.com;
+    listen 443 ssl; # Слушает на 443 порту (HTTPS) с использованием SSL.
+    server_name loc.project1.com; # Указывает доменное имя, к которому относится этот сервер.
 
-    ssl_certificate /usr/share/nginx/keys/sert.crt;
-    ssl_certificate_key /usr/share/nginx/keys/key.key;
+    ssl_certificate /usr/share/nginx/keys/sert.crt; # Путь к SSL-сертификату.
+    ssl_certificate_key /usr/share/nginx/keys/key.key; # Путь к приватному ключу SSL-сертификата.
 
-    location / {
-        root /var/www/project1.com;
-        index index.html;
-        try_files $uri $uri/ =404;
+    location / { # Определяет настройку для корневого URL.
+        root /var/www/project1.com; # Указывает корневую директорию для файлов сайта.
+        index index.html; # Указывает файл, который будет загружаться по умолчанию.
+        try_files $uri $uri/ =404; # Проверяет наличие запрашиваемого файла и возвращает 404, если файл не найден.
     }
 
-    location /mems/ {
-        alias /var/www/project1.com/mems/;
+    location /mems/ { # Определяет настройку для URL, начинающегося с /mems/.
+        alias /var/www/project1.com/mems/; # Указывает, что данный URL соответствует этой директории.
     }
-
 }
 
+# Конфигурация для второго домена
+
 server {
-    listen 443 ssl;
-    server_name loc.project2.com;
+    listen 443 ssl; # Слушает на 443 порту (HTTPS) с использованием SSL.
+    server_name loc.project2.com; # Указывает доменное имя, к которому относится этот сервер.
 
-    ssl_certificate /usr/share/nginx/keys/sert.crt;
-    ssl_certificate_key /usr/share/nginx/keys/key.key;
+    ssl_certificate /usr/share/nginx/keys/sert.crt; # Путь к SSL-сертификату.
+    ssl_certificate_key /usr/share/nginx/keys/key.key; # Путь к приватному ключу SSL-сертификата.
 
-    location / {
-        root /var/www/project2.com;
-        index index.html;
-        try_files $uri $uri/ =404;
+    location / { # Определяет настройку для корневого URL.
+        root /var/www/project2.com; # Указывает корневую директорию для файлов сайта.
+        index index.html; # Указывает файл, который будет загружаться по умолчанию.
+        try_files $uri $uri/ =404; # Проверяет наличие запрашиваемого файла и возвращает 404, если файл не найден.
     }
-
 }
 ```
 
@@ -162,10 +157,10 @@ server {
 Чтобы настроить мониторинг в данном коде Nginx, вам нужно добавить блок `location` для статуса сервера. Это будет точка, по которой вы можете просматривать статистику о работе Nginx. Для этого используется директива `stub_status`. В вашей текущей конфигурации должен появиться данный кусок:
 
 ```nginx
-    location /nginx_status {
-        stub_status on;
-        allow 127.0.0.1;
-        deny all;
+    location /nginx_status { # Определяет настройку для получения статуса сервера.
+        stub_status on; # Включает отображение статистики работы Nginx.
+        allow 127.0.0.1; # Разрешает доступ к статусу только с локального хоста.
+        deny all; # Запрещает доступ ко всем остальным IP-адресам.
     }
 ```
 
@@ -201,6 +196,7 @@ server {
     }
 
     # Статус сервера
+
     location /nginx_status { # Определяет настройку для получения статуса сервера.
         stub_status on; # Включает отображение статистики работы Nginx.
         allow 127.0.0.1; # Разрешает доступ к статусу только с локального хоста.
@@ -224,6 +220,7 @@ server {
     }
 
     # Статус сервера
+
     location /nginx_status { # Определяет настройку для получения статуса сервера.
         stub_status on; # Включает отображение статистики работы Nginx.
         allow 127.0.0.1; # Разрешает доступ к статусу только с локального хоста.
